@@ -45,4 +45,16 @@ APIs act as a bridge that enables different applications to exchange data.In thi
 
 ![Client-Server diagram](diagram.drawio.png)
 
+## Screenshot
+![Key Git commands](Screenshot1.png)
+![Key Git commands](Screenshot2.png)
+![Key Git commands](Screenshot3.png)
+![Key Git commands](Screenshot4.png)
+
+## UI in the browser
+
+![UI in the browser](Screenshot5.png)
+
+
+
 
