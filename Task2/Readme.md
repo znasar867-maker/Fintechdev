@@ -199,6 +199,8 @@ UI Update (DOM + Chart.js)
 ## Screenshots 
 
 * User Interface screenshot
+  <img width="1887" height="878" alt="image" src="https://github.com/user-attachments/assets/6bcb814d-4756-4ffa-b313-91994d843533" />
+
 
 * Chart output screenshot
 * Git command screenshots:
