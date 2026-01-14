@@ -203,18 +203,15 @@ UI Update (DOM + Chart.js)
 
 
 * Chart output screenshot
-* Git command screenshots:
+  <img width="1890" height="632" alt="image" src="https://github.com/user-attachments/assets/0e54ba6b-88bb-402a-97a5-34f9a55eb7a3" />
 
-  * `git add .`
-  * `git commit -m "Initial commit"`
-  * `git push`
+* Git command screenshots:
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/d8f45202-179b-4917-aef5-02ecd96b24fa" />
+
+  <img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/9c12ef5b-d52f-414c-ad37-3451504549e7" />
+
 
 ---
 
-## Final Notes
-
-* No payment gateway integration is implemented in this project
-* This project focuses on **conceptual understanding** of payment gateways
-* APIs are used only for learning and demonstration purposes
 
 
