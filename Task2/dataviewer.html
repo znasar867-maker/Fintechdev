@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Finova Data Viewer</title>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      .logo {
+        height: 100px;
+        display: block;
+        width: 250px;
+        margin-left: 630px;
+      }
+      .heading {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .heading2 {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 28px;
+      }
+      .stockcrypto {
+        margin-left: 510px;
+      }
+      .search {
+        width: 400px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-bottom: 50px;
+      }
+      .button {
+        background-color: rgb(211, 38, 4);
+        color: white;
+        border-style: solid;
+        transition: opacity 0.15s;
+        cursor: pointer;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      .button:hover {
+        opacity: 0.8;
+      }
+      .button:active {
+        opacity: 0.5;
+      }
+      .stock {
+        background-color: rgb(55, 125, 255);
+        margin-top: 10px;
+        display: inline-block;
+        margin-left: 100px;
+        padding-right: 1090px;
+        padding-left: 10px;
+        width: 250px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
+      }
+      .title {
+        font-family: Arial;
+        text-align: center;
+        margin-bottom: 0px;
+        margin-top: 40px;
+        display: block;
+        margin-left: 540px;
+        width: 100%;
+      }
+      .search1,
+      .search2 {
+        margin-left: 200px;
+        width: 900px;
+        height: 50px;
+        border-radius: 5px;
+        border-style: solid;
+        text-align: center;
+        line-height: 50px;
+        background: white;
+      }
+      .title1 {
+        font-family: Arial;
+        text-align: center;
+        margin-bottom: 0px;
+        margin-top: 5px;
+        margin-left: 540px;
+        width: 100%;
+      }
+      .tool {
+        text-align: center;
+      }
+      img {
+        margin-right: 5px;
+      }
+      .facebook,
+      .twitter,
+      .linkedin,
+      .reddit,
+      .pinterest {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img class="logo" src="premium_photo-1661313626999-90d230cabf8d.avif" />
+
+    <h1 class="heading">Finova Data Viewer</h1>
+    <p class="heading2">Quick access to stock and cryptocurrency data.</p>
+
+    <div class="stockcrypto">
+      <input
+        class="search"
+        id="searchInput"
+        type="text"
+        placeholder="Stock symbol or Crypto currency"
+      />
+      <button class="button" id="searchBtn">SEARCH</button>
+    </div>
+
+    <div class="stock">
+      <p class="title">STOCK INFORMATION</p>
+      <p class="search1" id="stockInfo">Waiting for input...</p>
+
+      <p class="title1">CRYPTO INFORMATION</p>
+      <p class="search2" id="cryptoInfo">Waiting for input...</p>
+    </div>
+
+    <div class="tool">
+      <p class="share">SHARE THIS TOOL</p>
+      <a href="https://www.facebook.com" target="_blank">
+        <img class="facebook" src="Facebook_logo_(square).png" />
+      </a>
+      <a href="https://x.com/" target="_blank">
+        <img
+          class="twitter"
+          src="64cebdd90aef8ef8c749e848_X-EverythingApp-Logo-Twitter.jpg"
+        />
+      </a>
+      <a href="https://www.linkedin.com/login" target="_blank">
+        <img class="linkedin" src="LinkedIn_logo_initials.png" />
+      </a>
+      <a href="https://www.reddit.com/" target="_blank">
+        <img class="reddit" src="3649916.webp" />
+      </a>
+      <a href="https://www.pinterest.com/" target="_blank">
+        <img class="pinterest" src="9343756.webp" />
+      </a>
+    </div>
+
+    <canvas id="priceChart" width="900" height="300"></canvas>
+
+    <script>
+      const searchInput = document.getElementById("searchInput");
+      const searchBtn = document.getElementById("searchBtn");
+      const cryptoInfo = document.getElementById("cryptoInfo");
+      const stockInfo = document.getElementById("stockInfo");
+      const chartCanvas = document.getElementById("priceChart");
+
+      let chart;
+
+      async function fetchCrypto(coin) {
+        try {
+          const priceRes = await fetch(
+            `https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=usd&include_24hr_change=true`
+          );
+          const priceData = await priceRes.json();
+
+          if (!priceData[coin]) {
+            cryptoInfo.textContent = "Crypto not found";
+            return;
+          }
+
+          const price = priceData[coin].usd;
+          const change = priceData[coin].usd_24h_change;
+
+          cryptoInfo.textContent = `Price: $${price} | 24h Change: ${change.toFixed(
+            2
+          )}%`;
+
+          const historyRes = await fetch(
+            `https://api.coingecko.com/api/v3/coins/${coin}/market_chart?vs_currency=usd&days=7`
+          );
+          const historyData = await historyRes.json();
+
+          const labels = historyData.prices.map(p =>
+            new Date(p[0]).toLocaleDateString()
+          );
+          const prices = historyData.prices.map(p => p[1]);
+
+          drawChart(labels, prices);
+        } catch {
+          cryptoInfo.textContent = "Error fetching crypto data";
+        }
+      }
+
+      function fetchStock(symbol) {
+        stockInfo.textContent = `Stock data for "${symbol.toUpperCase()}" (API required)`;
+      }
+
+      function drawChart(labels, data) {
+        if (chart) chart.destroy();
+
+        chart = new Chart(chartCanvas, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Price (USD)",
+                data,
+                borderWidth: 2,
+                tension: 0.4
+              }
+            ]
+          }
+        });
+      }
+
+      searchBtn.addEventListener("click", () => {
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) return;
+
+        fetchCrypto(query);
+        fetchStock(query);
+      });
+    </script>
+  </body>
+</html>
